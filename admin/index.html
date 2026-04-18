@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MMarket Admin</title>
+<style>
+:root {
+  --bg:#0d0d0d;--surface:#161616;--surface2:#1e1e1e;--surface3:#262626;
+  --border:#2a2a2a;--text:#e8e8e8;--text2:#888;--text3:#555;
+  --accent:#7c6af7;--accentdim:#7c6af720;--red:#e05c5c;--green:#5ce07a;
+  --yellow:#f5c842;--r:6px;--font:'Segoe UI',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px}
+body{display:flex;flex-direction:column;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:inherit;outline:none}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+
+/* Header */
+#header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.header-logo{font-size:18px;font-weight:700;letter-spacing:-0.5px}
+.header-logo span{color:var(--yellow)}
+.header-sub{font-size:11px;color:var(--text3);margin-left:2px}
+.header-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+#save-btn{background:var(--accent);color:#fff;border-radius:var(--r);padding:8px 16px;font-weight:600;font-size:13px;transition:opacity .15s}
+#save-btn:hover{opacity:.85}
+#save-btn:disabled{background:var(--surface3);color:var(--text3);cursor:not-allowed;opacity:1}
+.btn-s{background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:var(--r);padding:7px 12px;font-size:12px;transition:all .15s}
+.btn-s:hover{border-color:var(--accent);color:var(--text)}
+.btn-d{background:#e05c5c15;border:1px solid var(--red);color:var(--red);border-radius:var(--r);padding:7px 10px;font-size:12px;transition:all .15s}
+.btn-d:hover{background:#e05c5c25}
+.status{font-size:11px;color:var(--text3)}
+.status.ok{color:var(--green)}
+.status.err{color:var(--red)}
+
+/* Login */
+#login-screen{flex:1;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:32px;width:420px}
+.login-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.login-sub{font-size:12px;color:var(--text2);margin-bottom:24px;line-height:1.6}
+.f-label{font-size:11px;color:var(--text2);margin-bottom:4px;display:block}
+.f-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--r);padding:8px 10px;font-size:13px;margin-bottom:14px;transition:border-color .15s}
+.f-input:focus{border-color:var(--accent)}
+.login-help{font-size:11px;color:var(--text3);margin-top:12px;line-height:1.6}
+.login-help a{color:var(--accent)}
+#login-err{color:var(--red);font-size:12px;margin-top:10px;display:none}
+
+/* Main layout */
+#main-screen{flex:1;display:none;flex-direction:column;overflow:hidden}
+#toolbar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#search-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);padding:6px 10px;font-size:12px;width:200px;transition:border-color .15s}
+#search-box:focus{border-color:var(--accent)}
+#search-box::placeholder{color:var(--text3)}
+#filter-type,#filter-new{background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:var(--r);padding:6px 8px;font-size:12px}
+.count-badge{font-size:11px;color:var(--text3);margin-left:2px}
+
+/* Plugin list */
+#content{flex:1;overflow-y:auto;padding:20px 24px}
+#plugin-list{display:flex;flex-direction:column;gap:8px}
+
+.plugin-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:14px;transition:border-color .15s}
+.plugin-row:hover{border-color:var(--surface3)}
+.plugin-row.editing{border-color:var(--accent)}
+.plugin-priority{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.p5{background:#5ce07a30;color:var(--green)}
+.p4{background:#7c6af730;color:var(--accent)}
+.p3{background:#e0b95c30;color:#e0b95c}
+.p2{background:#e05c5c20;color:#e07a5c}
+.p1{background:#55555530;color:var(--text3)}
+.plugin-info{flex:1;min-width:0}
+.plugin-name{font-weight:600;font-size:13px;margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.plugin-meta{font-size:11px;color:var(--text2);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.meta-tag{background:var(--surface2);padding:1px 6px;border-radius:3px}
+.compat-free{color:var(--green)}
+.compat-studio{color:var(--red)}
+.plugin-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-edit{background:var(--accentdim);border:1px solid var(--accent);color:var(--accent);border-radius:var(--r);padding:5px 10px;font-size:11px;transition:all .15s}
+.btn-edit:hover{background:var(--accent);color:#fff}
+
+/* NEW badge */
+.badge-new{background:#5ce07a18;color:var(--green);border:1px solid #5ce07a40;border-radius:3px;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:.04em;line-height:1.7;display:inline-block}
+
+/* Editor panel */
+#editor-panel{position:fixed;right:0;top:0;bottom:0;width:480px;background:var(--surface);border-left:1px solid var(--border);transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:100;display:flex;flex-direction:column;overflow:hidden}
+#editor-panel.open{transform:translateX(0)}
+.ep-header{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.ep-title{font-weight:600;font-size:14px;flex:1}
+.ep-close{background:var(--surface2);border:1px solid var(--border);color:var(--text2);width:28px;height:28px;border-radius:var(--r);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0}
+.ep-close:hover{border-color:var(--red);color:var(--red)}
+.ep-body{overflow-y:auto;flex:1;padding:16px}
+.ep-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--r);padding:7px 10px;font-size:12px;transition:border-color .15s;font-family:var(--font)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:70px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-hint{font-size:10px;color:var(--text3);margin-top:3px;line-height:1.5}
+.compat-row{display:flex;gap:16px;align-items:center;padding:8px 0}
+.compat-label{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer}
+.compat-label input{width:auto;accent-color:var(--accent)}
+.priority-select{display:flex;gap:6px;margin-top:4px}
+.prio-btn{width:36px;height:36px;border-radius:var(--r);font-weight:700;font-size:14px;cursor:pointer;border:2px solid var(--border);background:var(--surface2);color:var(--text2);transition:all .15s}
+.prio-btn.active{border-color:var(--accent);background:var(--accentdim);color:var(--accent)}
+
+/* Add plugin button */
+#add-btn{background:var(--accentdim);border:1px solid var(--accent);color:var(--accent);border-radius:var(--r);padding:8px 14px;font-size:13px;font-weight:600;transition:all .15s}
+#add-btn:hover{background:var(--accent);color:#fff}
+
+/* Registry settings modal */
+#reg-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:center;justify-content:center}
+#reg-modal.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;width:480px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:11px;color:var(--text3);margin-bottom:20px;line-height:1.6}
+.modal-section{border-top:1px solid var(--border);padding-top:14px;margin-top:14px}
+.modal-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:12px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+.ann-preview{background:var(--accentdim);border:1px solid #7c6af740;border-radius:var(--r);padding:9px 12px;font-size:12px;color:var(--text2);margin-top:6px;min-height:34px;white-space:pre-wrap;line-height:1.5}
+
+/* Toast */
+#toasts{position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:12px;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:300px;animation:tIn .2s ease}
+.toast.ok{border-color:var(--green)}
+.toast.err{border-color:var(--red)}
+@keyframes tIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--surface3);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <div class="header-logo"><span>M</span>Market Admin</div>
+    <div class="header-sub">Panel de administracion del registry</div>
+  </div>
+  <div class="header-actions" id="header-actions" style="display:none">
+    <span class="status" id="status-msg"></span>
+    <button class="btn-s" onclick="logout()">Salir</button>
+    <button id="save-btn" onclick="saveRegistry()" disabled>Guardar cambios</button>
+  </div>
+</div>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-title">Acceso al panel</div>
+    <div class="login-sub">
+      Necesitas un GitHub Personal Access Token con permisos de escritura en el repo MaaruAx/MMarket.
+    </div>
+    <label class="f-label">GitHub Token</label>
+    <input type="password" id="token-input" class="f-input" placeholder="ghp_xxxxxxxxxxxx" onkeydown="if(event.key==='Enter')login()">
+    <label class="f-label">Repositorio</label>
+    <input type="text" id="repo-input" class="f-input" value="MaaruAx/MMarket">
+    <label class="f-label">Ruta del registry</label>
+    <input type="text" id="path-input" class="f-input" value="registry/registry.json">
+    <button class="btn-s" style="width:100%;padding:10px;font-size:13px;text-align:center" onclick="login()">
+      Conectar
+    </button>
+    <div id="login-err"></div>
+    <div class="login-help">
+      Crea tu token en: <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
+      Permisos necesarios: <strong>repo</strong> (acceso completo al repositorio).<br>
+      El token se guarda solo en tu navegador, nunca se envia a ningun servidor.
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div id="main-screen">
+  <div id="toolbar">
+    <button id="add-btn" onclick="openEditor(null)">+ Agregar plugin</button>
+    <input type="text" id="search-box" placeholder="Buscar por nombre, id o tag..." oninput="renderList()">
+    <select id="filter-type" onchange="renderList()">
+      <option value="all">Todos los tipos</option>
+      <option value="drfx">Plugin .drfx</option>
+      <option value="setting">Efecto .setting</option>
+      <option value="script">Script</option>
+      <option value="fuse">Fuse .fuse</option>
+      <option value="macro">Macro .setting</option>
+      <option value="lut">LUT</option>
+    </select>
+    <select id="filter-new" onchange="renderList()">
+      <option value="all">Todos</option>
+      <option value="new">Solo Nuevos</option>
+      <option value="no-date">Sin fecha</option>
+    </select>
+    <span class="count-badge" id="count-badge"></span>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn-s" onclick="openRegistrySettings()" title="Configurar repo, Nuevos y anuncios">&#9881; Registry</button>
+      <button class="btn-s" onclick="reloadRegistry()" title="Recargar desde GitHub">Recargar</button>
+    </div>
+  </div>
+  <div id="content">
+    <div id="plugin-list"></div>
+  </div>
+</div>
+
+<!-- Editor panel -->
+<div id="editor-panel">
+  <div class="ep-header">
+    <span class="ep-title" id="ep-title">Nuevo plugin</span>
+    <button class="ep-close" onclick="closeEditor()">&#10005;</button>
+  </div>
+  <div class="ep-body">
+    <input type="hidden" id="f-index">
+
+    <div class="field-row">
+      <div class="field">
+        <label>ID unico *</label>
+        <input type="text" id="f-id" placeholder="mi-plugin-v1">
+        <div class="field-hint">Solo letras minusculas, numeros y guiones</div>
+      </div>
+      <div class="field">
+        <label>Version *</label>
+        <input type="text" id="f-version" placeholder="1.0.0">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Nombre *</label>
+      <input type="text" id="f-name" placeholder="Nombre visible en la tienda">
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Tipo de instalacion *</label>
+        <select id="f-install-type">
+          <option value="drfx">Plugin .drfx</option>
+          <option value="setting">Efecto .setting</option>
+          <option value="script">Script .py/.lua</option>
+          <option value="fuse">Fuse .fuse</option>
+          <option value="macro">Macro .setting</option>
+          <option value="lut">LUT .cube/.3dl</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Version minima de Resolve</label>
+        <input type="text" id="f-resolve-min" placeholder="18.0">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Fecha de adicion (added_at)</label>
+      <input type="date" id="f-added-at">
+      <div class="field-hint">
+        Plugins dentro de la ventana configurada en "Nuevos" reciben el badge NEW en la tienda.
+        Dejar vacio usa la fecha de hoy.
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Prioridad (1-5, mayor = aparece primero)</label>
+      <div class="priority-select">
+        <button class="prio-btn" onclick="setPrio(1)">1</button>
+        <button class="prio-btn" onclick="setPrio(2)">2</button>
+        <button class="prio-btn" onclick="setPrio(3)">3</button>
+        <button class="prio-btn" onclick="setPrio(4)">4</button>
+        <button class="prio-btn" onclick="setPrio(5)">5</button>
+      </div>
+      <input type="hidden" id="f-priority" value="3">
+    </div>
+
+    <div class="field">
+      <label>Compatibilidad</label>
+      <div class="compat-row">
+        <label class="compat-label"><input type="checkbox" id="f-free" checked> Version gratuita</label>
+        <label class="compat-label"><input type="checkbox" id="f-studio" checked> Studio</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Descripcion *</label>
+      <textarea id="f-description" placeholder="Descripcion que veran los usuarios en la tienda..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Como usarlo</label>
+      <textarea id="f-usage" placeholder="Instrucciones paso a paso para el usuario..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Autor</label>
+      <input type="text" id="f-author" placeholder="nombre_usuario">
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>URL del autor</label>
+        <input type="text" id="f-author-url" placeholder="https://github.com/autor">
+      </div>
+      <div class="field">
+        <label>URL del codigo fuente</label>
+        <input type="text" id="f-source-url" placeholder="https://github.com/autor/repo">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>URL de descarga *</label>
+      <input type="text" id="f-download-url" placeholder="https://github.com/.../releases/download/v1.0/archivo.zip">
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Thumbnail (URL completa o ruta en el repo)</label>
+        <input type="text" id="f-thumbnail" placeholder="assets/plugins/nombre.jpg">
+      </div>
+      <div class="field">
+        <label>YouTube ID (solo el ID)</label>
+        <input type="text" id="f-youtube" placeholder="dQw4w9WgXcQ">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Tags (separados por comas)</label>
+      <input type="text" id="f-tags" placeholder="color, cinematic, fusion">
+    </div>
+  </div>
+  <div class="ep-footer">
+    <button class="btn-d" id="ep-delete-btn" onclick="deletePlugin()" style="display:none">Eliminar</button>
+    <button class="btn-s" onclick="closeEditor()">Cancelar</button>
+    <button class="btn-s" style="background:var(--accentdim);border-color:var(--accent);color:var(--accent)" onclick="savePlugin()">Guardar plugin</button>
+  </div>
+</div>
+
+<!-- Registry settings modal -->
+<div id="reg-modal">
+  <div class="modal-box">
+    <div class="modal-title">Configuracion del Registry</div>
+    <div class="modal-sub">
+      Estos valores se guardan dentro del <code>registry.json</code> y MMarket los consume directamente. Haz clic en "Guardar cambios" en la barra superior para publicar en GitHub.
+    </div>
+
+    <!-- Repo info -->
+    <div class="modal-section">
+      <div class="modal-section-title">Informacion del repositorio</div>
+      <div class="field">
+        <label>Nombre del repo</label>
+        <input type="text" id="reg-name" placeholder="MMarket Official">
+        <div class="field-hint">Aparece en la app al listar repositorios de plugins</div>
+      </div>
+      <div class="field">
+        <label>Descripcion</label>
+        <textarea id="reg-description" style="min-height:56px" placeholder="Plugin marketplace oficial para DaVinci Resolve"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>URL del repo</label>
+          <input type="text" id="reg-url" placeholder="https://github.com/MaaruAx/MMarket">
+        </div>
+        <div class="field">
+          <label>Autor</label>
+          <input type="text" id="reg-author" placeholder="MaaruAx">
+        </div>
+      </div>
+    </div>
+
+    <!-- Nuevos section -->
+    <div class="modal-section">
+      <div class="modal-section-title">Seccion "Nuevos" en la tienda</div>
+      <div class="field">
+        <label>Ventana de tiempo (dias)</label>
+        <input type="number" id="reg-new-days" min="1" max="180" value="15" style="max-width:120px">
+        <div class="field-hint">
+          Plugins con <strong>added_at</strong> dentro de este periodo aparecen en la seccion "Nuevos"
+          de la tienda y reciben el badge NEW en la lista general. Recomendado: 15-30 dias.
+        </div>
+      </div>
+    </div>
+
+    <!-- Announcement -->
+    <div class="modal-section">
+      <div class="modal-section-title">Anuncio / Banner en la app</div>
+      <div class="field">
+        <label>Texto del anuncio</label>
+        <textarea id="reg-announcement" style="min-height:64px"
+          placeholder="Mensaje que aparece como banner en la pagina principal de MMarket. Dejar vacio para desactivar."
+          oninput="updateAnnPreview()"></textarea>
+        <div class="field-hint">Texto plano. Dejar vacio = sin banner.</div>
+      </div>
+      <div class="field">
+        <label>URL del anuncio (opcional)</label>
+        <input type="text" id="reg-announcement-url" placeholder="https://github.com/MaaruAx/MMarket/releases">
+        <div class="field-hint">Si se especifica, el banner es clickeable y abre esta URL</div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">Vista previa:</div>
+      <div class="ann-preview" id="ann-preview">Sin anuncio activo</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-s" onclick="closeRegistrySettings()">Cancelar</button>
+      <button class="btn-s" style="border-color:var(--accent);color:var(--accent);background:var(--accentdim)" onclick="saveRegistrySettings()">Aplicar configuracion</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+var TOKEN    = '';
+var REPO     = '';
+var PATH     = '';
+var SHA      = '';
+var registry = null;
+var dirty    = false;
+
+// -- Auth ------------------------------------------------------------------
+function login() {
+  TOKEN = document.getElementById('token-input').value.trim();
+  REPO  = document.getElementById('repo-input').value.trim();
+  PATH  = document.getElementById('path-input').value.trim();
+
+  if (!TOKEN || !REPO || !PATH) { showErr('Completa todos los campos'); return; }
+
+  var btn = document.querySelector('#login-screen .btn-s');
+  btn.innerHTML = '<span class="spin"></span> Conectando...';
+  btn.disabled  = true;
+
+  fetchRegistry().then(function(ok) {
+    if (ok) {
+      sessionStorage.setItem('mm_token', TOKEN);
+      sessionStorage.setItem('mm_repo',  REPO);
+      sessionStorage.setItem('mm_path',  PATH);
+      document.getElementById('login-screen').style.display  = 'none';
+      document.getElementById('main-screen').style.display   = 'flex';
+      document.getElementById('header-actions').style.display = 'flex';
+      renderList();
+      toast('Conectado a ' + REPO, 'ok');
+    } else {
+      btn.textContent = 'Conectar';
+      btn.disabled    = false;
+    }
+  });
+}
+
+function logout() {
+  if (dirty && !confirm('Hay cambios sin guardar. Salir de todas formas?')) return;
+  sessionStorage.clear();
+  location.reload();
+}
+
+function showErr(msg) {
+  var el = document.getElementById('login-err');
+  el.textContent  = msg;
+  el.style.display = 'block';
+}
+
+window.addEventListener('load', function() {
+  var t = sessionStorage.getItem('mm_token');
+  var r = sessionStorage.getItem('mm_repo');
+  var p = sessionStorage.getItem('mm_path');
+  if (t && r && p) {
+    document.getElementById('token-input').value = t;
+    document.getElementById('repo-input').value  = r;
+    document.getElementById('path-input').value  = p;
+    TOKEN = t; REPO = r; PATH = p;
+    login();
+  }
+});
+
+// -- GitHub API ------------------------------------------------------------
+function ghHeaders() {
+  return {
+    'Authorization': 'Bearer ' + TOKEN,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+}
+
+function apiUrl() {
+  return 'https://api.github.com/repos/' + REPO + '/contents/' + PATH;
+}
+
+function fetchRegistry() {
+  return fetch(apiUrl(), { headers: ghHeaders() })
+    .then(function(r) {
+      if (r.status === 401) { showErr('Token invalido o sin permisos'); return false; }
+      if (r.status === 404) { showErr('Repositorio o archivo no encontrado'); return false; }
+      if (!r.ok) { showErr('Error al conectar: ' + r.status); return false; }
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data) return false;
+      SHA = data.sha;
+      var decoded = atob(data.content.replace(/\n/g, ''));
+      registry = JSON.parse(decoded);
+      if (!registry.plugins)  registry.plugins  = [];
+      if (!registry.settings) registry.settings = { new_window_days: 15, announcement: null, announcement_url: null };
+      if (!registry.repo)     registry.repo     = { name: '', description: '', url: '', author: '' };
+      return true;
+    })
+    .catch(function(e) { showErr('Error de red: ' + e.message); return false; });
+}
+
+function reloadRegistry() {
+  if (dirty && !confirm('Hay cambios sin guardar. Recargar de todas formas?')) return;
+  setStatus('Recargando...', '');
+  fetchRegistry().then(function(ok) {
+    if (ok) { dirty = false; setDirty(false); renderList(); toast('Registry recargado', 'ok'); }
+    else toast('Error al recargar', 'err');
+  });
+}
+
+function saveRegistry() {
+  if (!dirty) return;
+  setStatus('Guardando...', '');
+  document.getElementById('save-btn').disabled = true;
+
+  var content = btoa(unescape(encodeURIComponent(JSON.stringify(registry, null, 2))));
+  fetch(apiUrl(), {
+    method: 'PUT',
+    headers: Object.assign({'Content-Type': 'application/json'}, ghHeaders()),
+    body: JSON.stringify({ message: 'Admin: update registry.json', content: content, sha: SHA })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.content) {
+      SHA = data.content.sha;
+      dirty = false;
+      setDirty(false);
+      setStatus('Guardado correctamente', 'ok');
+      toast('Registry guardado en GitHub', 'ok');
+    } else {
+      setStatus('Error al guardar: ' + (data.message || 'desconocido'), 'err');
+      document.getElementById('save-btn').disabled = false;
+    }
+  })
+  .catch(function(e) {
+    setStatus('Error de red: ' + e.message, 'err');
+    document.getElementById('save-btn').disabled = false;
+  });
+}
+
+function setStatus(msg, type) {
+  var el = document.getElementById('status-msg');
+  el.textContent = msg;
+  el.className   = 'status' + (type ? ' ' + type : '');
+}
+
+function setDirty(val) {
+  dirty = val;
+  document.getElementById('save-btn').disabled = !val;
+  if (val) setStatus('Cambios sin guardar', '');
+}
+
+// -- Registry settings modal -----------------------------------------------
+function openRegistrySettings() {
+  var s = registry.settings || {};
+  var r = registry.repo     || {};
+  document.getElementById('reg-name').value             = r.name             || '';
+  document.getElementById('reg-description').value      = r.description      || '';
+  document.getElementById('reg-url').value              = r.url              || '';
+  document.getElementById('reg-author').value           = r.author           || '';
+  document.getElementById('reg-new-days').value         = s.new_window_days  || 15;
+  document.getElementById('reg-announcement').value     = s.announcement     || '';
+  document.getElementById('reg-announcement-url').value = s.announcement_url || '';
+  updateAnnPreview();
+  document.getElementById('reg-modal').classList.add('open');
+}
+
+function closeRegistrySettings() {
+  document.getElementById('reg-modal').classList.remove('open');
+}
+
+function saveRegistrySettings() {
+  if (!registry.settings) registry.settings = {};
+  if (!registry.repo)     registry.repo     = {};
+
+  registry.repo.name        = document.getElementById('reg-name').value.trim();
+  registry.repo.description = document.getElementById('reg-description').value.trim();
+  registry.repo.url         = document.getElementById('reg-url').value.trim();
+  registry.repo.author      = document.getElementById('reg-author').value.trim();
+
+  var days = parseInt(document.getElementById('reg-new-days').value) || 15;
+  registry.settings.new_window_days  = Math.max(1, Math.min(180, days));
+  var ann    = document.getElementById('reg-announcement').value.trim();
+  var annUrl = document.getElementById('reg-announcement-url').value.trim();
+  registry.settings.announcement     = ann    || null;
+  registry.settings.announcement_url = annUrl || null;
+
+  setDirty(true);
+  closeRegistrySettings();
+  toast('Configuracion aplicada — guarda para publicar en GitHub', 'ok');
+}
+
+function updateAnnPreview() {
+  var txt = document.getElementById('reg-announcement').value.trim();
+  document.getElementById('ann-preview').textContent = txt || 'Sin anuncio activo';
+}
+
+// -- "Nuevos" helper -------------------------------------------------------
+function isPluginNew(p) {
+  if (!p.added_at) return false;
+  var s    = (registry && registry.settings) ? registry.settings : {};
+  var days = s.new_window_days || 15;
+  return (Date.now() - new Date(p.added_at).getTime()) / 86400000 <= days;
+}
+
+// -- List ------------------------------------------------------------------
+function renderList() {
+  var q       = document.getElementById('search-box').value.toLowerCase();
+  var type    = document.getElementById('filter-type').value;
+  var newFilt = document.getElementById('filter-new').value;
+  var plugins = (registry && registry.plugins) ? registry.plugins : [];
+
+  var filtered = plugins.filter(function(p) {
+    var mQ = !q ||
+             p.name.toLowerCase().includes(q) ||
+             p.id.toLowerCase().includes(q)   ||
+             (p.tags || []).some(function(t) { return t.toLowerCase().includes(q); });
+    var mT = type === 'all' || p.install_type === type;
+    var mN = newFilt === 'all'     ||
+             (newFilt === 'new'     && isPluginNew(p)) ||
+             (newFilt === 'no-date' && !p.added_at);
+    return mQ && mT && mN;
+  });
+
+  document.getElementById('count-badge').textContent = filtered.length + ' / ' + plugins.length + ' plugins';
+
+  var html = filtered.map(function(p) {
+    var realIdx  = plugins.indexOf(p);
+    var prio     = p.priority || 3;
+    var isNew    = isPluginNew(p);
+    var c        = p.compatibility || {};
+    var compatStr =
+      (c.free   ? '<span class="compat-free">Free</span>' : '') +
+      (c.free && c.studio ? ' + ' : '') +
+      (c.studio ? '<span class="compat-studio">Studio</span>' : '');
+
+    return '<div class="plugin-row" id="row-' + realIdx + '">' +
+      '<div class="plugin-priority p' + prio + '">' + prio + '</div>' +
+      '<div class="plugin-info">' +
+        '<div class="plugin-name">' +
+          esc(p.name) +
+          (isNew ? ' <span class="badge-new">NEW</span>' : '') +
+        '</div>' +
+        '<div class="plugin-meta">' +
+          '<span class="meta-tag">' + esc(p.install_type) + '</span>' +
+          '<span class="meta-tag">v' + esc(p.version) + '</span>' +
+          '<span class="meta-tag">' + esc(p.id) + '</span>' +
+          (p.added_at ? '<span class="meta-tag">' + esc(p.added_at) + '</span>' : '') +
+          (p.author   ? '<span class="meta-tag">' + esc(p.author)   + '</span>' : '') +
+          compatStr +
+        '</div>' +
+      '</div>' +
+      '<div class="plugin-actions">' +
+        '<button class="btn-edit" onclick="openEditor(' + realIdx + ')">Editar</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  document.getElementById('plugin-list').innerHTML =
+    html || '<div style="color:var(--text3);padding:40px;text-align:center">No hay plugins. Agrega uno con el boton de arriba.</div>';
+}
+
+// -- Editor ----------------------------------------------------------------
+var currentIdx = null;
+
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+function openEditor(idx) {
+  currentIdx = idx;
+  var p = idx !== null ? registry.plugins[idx] : null;
+
+  document.getElementById('ep-title').textContent              = p ? 'Editar: ' + p.name : 'Nuevo plugin';
+  document.getElementById('ep-delete-btn').style.display       = p ? 'block' : 'none';
+  document.getElementById('f-index').value                     = idx !== null ? idx : '';
+  document.getElementById('f-id').value                        = p ? p.id              : '';
+  document.getElementById('f-version').value                   = p ? p.version         : '1.0.0';
+  document.getElementById('f-name').value                      = p ? p.name            : '';
+  document.getElementById('f-install-type').value              = p ? p.install_type    : 'drfx';
+  document.getElementById('f-resolve-min').value               = p ? (p.resolve_min    || '') : '';
+  document.getElementById('f-description').value               = p ? p.description     : '';
+  document.getElementById('f-usage').value                     = p ? (p.usage_notes    || '') : '';
+  document.getElementById('f-author').value                    = p ? (p.author         || '') : '';
+  document.getElementById('f-author-url').value                = p ? (p.author_url     || '') : '';
+  document.getElementById('f-source-url').value                = p ? (p.source_url     || '') : '';
+  document.getElementById('f-download-url').value              = p ? p.download_url           : '';
+  document.getElementById('f-thumbnail').value                 = p ? (p.thumbnail      || '') : '';
+  document.getElementById('f-youtube').value                   = p ? (p.youtube_id     || '') : '';
+  document.getElementById('f-tags').value                      = p ? (p.tags || []).join(', ') : '';
+  document.getElementById('f-added-at').value                  = p ? (p.added_at       || todayStr()) : todayStr();
+
+  var c = p ? (p.compatibility || {}) : {};
+  document.getElementById('f-free').checked   = c.free   !== false;
+  document.getElementById('f-studio').checked = c.studio !== false;
+
+  setPrio(p ? (p.priority || 3) : 3);
+  document.getElementById('editor-panel').classList.add('open');
+}
+
+function closeEditor() {
+  document.getElementById('editor-panel').classList.remove('open');
+  currentIdx = null;
+}
+
+function setPrio(val) {
+  document.getElementById('f-priority').value = val;
+  document.querySelectorAll('.prio-btn').forEach(function(b, i) {
+    b.classList.toggle('active', (i + 1) === val);
+  });
+}
+
+function savePlugin() {
+  var id    = document.getElementById('f-id').value.trim();
+  var name  = document.getElementById('f-name').value.trim();
+  var dlUrl = document.getElementById('f-download-url').value.trim();
+  var desc  = document.getElementById('f-description').value.trim();
+
+  if (!id || !name || !dlUrl || !desc) { toast('Completa los campos obligatorios (*)', 'err'); return; }
+  if (!/^[a-z0-9-]+$/.test(id))        { toast('El ID solo puede tener letras minusculas, numeros y guiones', 'err'); return; }
+
+  var tags    = document.getElementById('f-tags').value.split(',').map(function(t){ return t.trim(); }).filter(Boolean);
+  var addedAt = document.getElementById('f-added-at').value || todayStr();
+
+  var plugin = {
+    id:           id,
+    name:         name,
+    version:      document.getElementById('f-version').value.trim()      || '1.0.0',
+    priority:     parseInt(document.getElementById('f-priority').value)  || 3,
+    install_type: document.getElementById('f-install-type').value,
+    category:     document.getElementById('f-install-type').value,
+    tags:         tags,
+    description:  desc,
+    usage_notes:  document.getElementById('f-usage').value.trim(),
+    author:       document.getElementById('f-author').value.trim(),
+    author_url:   document.getElementById('f-author-url').value.trim(),
+    source_url:   document.getElementById('f-source-url').value.trim(),
+    thumbnail:    document.getElementById('f-thumbnail').value.trim(),
+    youtube_id:   document.getElementById('f-youtube').value.trim(),
+    resolve_min:  document.getElementById('f-resolve-min').value.trim()  || '18.0',
+    download_url: dlUrl,
+    added_at:     addedAt,
+    compatibility: {
+      free:   document.getElementById('f-free').checked,
+      studio: document.getElementById('f-studio').checked
+    }
+  };
+
+  if (currentIdx !== null) {
+    registry.plugins[currentIdx] = plugin;
+    toast('Plugin actualizado', 'ok');
+  } else {
+    if (registry.plugins.some(function(p) { return p.id === id; })) {
+      toast('Ya existe un plugin con ese ID', 'err'); return;
+    }
+    registry.plugins.push(plugin);
+    toast('Plugin agregado', 'ok');
+  }
+
+  setDirty(true);
+  closeEditor();
+  renderList();
+}
+
+function deletePlugin() {
+  if (currentIdx === null) return;
+  var name = registry.plugins[currentIdx].name;
+  if (!confirm('Eliminar "' + name + '" del registry?')) return;
+  registry.plugins.splice(currentIdx, 1);
+  setDirty(true);
+  closeEditor();
+  renderList();
+  toast(name + ' eliminado', 'ok');
+}
+
+// -- Utils -----------------------------------------------------------------
+function toast(msg, type) {
+  var el = document.createElement('div');
+  el.className  = 'toast' + (type ? ' ' + type : '');
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(function() { el.remove(); }, 3500);
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

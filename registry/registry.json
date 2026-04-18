@@ -1,0 +1,242 @@
+{
+  "repo": {
+    "name": "MMarket Official",
+    "author": "MaaruAx",
+    "description": "Repositorio oficial de MMarket",
+    "url": "https://raw.githubusercontent.com/MaaruAx/MMarket/main/registry/registry.json",
+    "website": "https://github.com/MaaruAx/MMarket",
+    "new_days": 30
+  },
+  "app_changelog": [
+    {
+      "version": "0.1.0",
+      "date": "2025-04-01",
+      "current": true,
+      "changes": [
+        "Lanzamiento inicial de MMarket",
+        "Fuentes Barlow Condensed y Space Grotesk embebidas sin dependencias externas",
+        "Autenticación con GitHub (Device Flow) para comentarios y calificaciones",
+        "Sistema de calificaciones por estrellas en tienda y comunidad",
+        "Sección Nuevos en Tienda, configurable con new_days en el registry",
+        "Liquid glass: desenfoque y opacidad de superficies",
+        "Radio de bordes ajustable con slider",
+        "Borde de tags, círculo de switch y highlight activo personalizables",
+        "Filtro por estrellas en tienda",
+        "Popups de changelog, actualizaciones y upsell post-instalación",
+        "Idiomas externos desde carpeta langs/ del repositorio"
+      ]
+    }
+  ],
+  "langs": [
+    {
+      "code": "en",
+      "name": "English",
+      "url": "https://raw.githubusercontent.com/MaaruAx/MMarket/main/langs/en.json"
+    }
+  ],
+  "themes": [
+    {
+      "id": "mmarket-default",
+      "name": "MMarket Dark",
+      "colors": {
+        "--bg": "#0a0a0a", "--sf": "#111111", "--sf2": "#181818", "--sf3": "#222222",
+        "--bd": "#2a2a2a", "--bd2": "#3a3a3a", "--tx": "#f0f0f0", "--tx2": "#888",
+        "--tx3": "#555", "--ac": "#f5c842", "--hover": "rgba(255,255,255,.07)",
+        "--active-hl": "rgba(245,200,66,.12)", "--tag-bd": "rgba(245,200,66,.4)",
+        "--toggle-dot": "#ffffff"
+      }
+    },
+    {
+      "id": "mmarket-violet",
+      "name": "Violet",
+      "colors": {
+        "--bg": "#0d0a14", "--sf": "#13101e", "--sf2": "#1a1628", "--sf3": "#231e35",
+        "--bd": "#2e2847", "--bd2": "#3d3860", "--tx": "#e8e0f5", "--tx2": "#9b94b5",
+        "--tx3": "#5c5578", "--ac": "#a78bfa", "--hover": "rgba(167,139,250,.07)",
+        "--active-hl": "rgba(167,139,250,.12)", "--tag-bd": "rgba(167,139,250,.4)",
+        "--toggle-dot": "#e8e0f5"
+      }
+    },
+    {
+      "id": "mmarket-cyber",
+      "name": "Cyber Cyan",
+      "colors": {
+        "--bg": "#060d0f", "--sf": "#0a1518", "--sf2": "#0f1e22", "--sf3": "#14272d",
+        "--bd": "#1a3a42", "--bd2": "#235060", "--tx": "#e0f5f8", "--tx2": "#7ab5be",
+        "--tx3": "#3d7580", "--ac": "#22d3ee", "--hover": "rgba(34,211,238,.07)",
+        "--active-hl": "rgba(34,211,238,.12)", "--tag-bd": "rgba(34,211,238,.4)",
+        "--toggle-dot": "#e0f5f8"
+      }
+    },
+    {
+      "id": "mmarket-rosepine",
+      "name": "Rose Pine",
+      "colors": {
+        "--bg": "#191724", "--sf": "#1f1d2e", "--sf2": "#26233a", "--sf3": "#403d52",
+        "--bd": "#403d52", "--bd2": "#524f67", "--tx": "#e0def4", "--tx2": "#908caa",
+        "--tx3": "#6e6a86", "--ac": "#c4a7e7", "--hover": "rgba(196,167,231,.07)",
+        "--active-hl": "rgba(196,167,231,.12)", "--tag-bd": "rgba(196,167,231,.4)",
+        "--toggle-dot": "#e0def4"
+      }
+    }
+  ],
+  "plugins": [
+    {
+      "id": "example-lut-pack",
+      "name": "Cinematic LUT Pack Vol.1",
+      "version": "1.0.0",
+      "priority": 5,
+      "category": "lut",
+      "install_type": "lut",
+      "added_date": "2025-04-01",
+      "tags": ["color", "cinematic"],
+      "description": "Pack de 10 LUTs cinematográficos para la página de color.",
+      "usage_notes": "Aplica el LUT en un nodo de corrección en la página Color. Ajusta la opacidad al gusto.",
+      "author": "ejemplo_autor",
+      "author_url": "https://github.com/ejemplo_autor",
+      "source_url": "https://github.com/ejemplo_autor/cinematic-luts",
+      "thumbnail": "",
+      "icon": "",
+      "images": [],
+      "youtube_id": "",
+      "resolve_min": "17.0",
+      "download_url": "https://github.com/ejemplo_autor/cinematic-luts/releases/download/v1.0/pack.zip",
+      "compatibility": { "free": true, "studio": true },
+      "related": ["example-macro-titles", "example-fuse-glow"],
+      "upsell_plugin_id": "",
+      "changelog": [
+        { "version": "1.0.0", "date": "2025-04-01", "changes": ["Lanzamiento inicial con 10 LUTs cinematográficos", "Compatible con DaVinci Resolve 17+"] }
+      ]
+    },
+    {
+      "id": "example-macro-titles",
+      "name": "Animated Titles Pack",
+      "version": "2.1.0",
+      "priority": 4,
+      "category": "macro",
+      "install_type": "macro",
+      "added_date": "2025-04-10",
+      "tags": ["titles", "animation", "fusion"],
+      "description": "15 macros de títulos animados para Fusion. Minimalistas, corporativos y cinematográficos.",
+      "usage_notes": "Los macros aparecen en la biblioteca de templates de Fusion. Arrástralos al comp y ajusta en el inspector.",
+      "author": "ejemplo_autor2",
+      "author_url": "https://github.com/ejemplo_autor2",
+      "source_url": "https://github.com/ejemplo_autor2/animated-titles",
+      "thumbnail": "",
+      "icon": "",
+      "images": [],
+      "youtube_id": "",
+      "resolve_min": "18.0",
+      "download_url": "https://github.com/ejemplo_autor2/animated-titles/releases/download/v2.1/titles.zip",
+      "compatibility": { "free": true, "studio": true },
+      "related": ["example-lut-pack"],
+      "upsell_plugin_id": "",
+      "changelog": [
+        { "version": "2.1.0", "date": "2025-04-10", "changes": ["5 macros nuevos estilo corporativo", "Corrección de compatibilidad con Resolve 19"] },
+        { "version": "2.0.0", "date": "2025-02-10", "changes": ["Rediseño completo", "Nuevas opciones de color"] },
+        { "version": "1.0.0", "date": "2024-11-01", "changes": ["Versión inicial"] }
+      ]
+    },
+    {
+      "id": "example-fuse-glow",
+      "name": "Advanced Glow Fuse",
+      "version": "1.0.0",
+      "priority": 3,
+      "category": "fuse",
+      "install_type": "fuse",
+      "added_date": "2025-04-14",
+      "tags": ["glow", "vfx", "fusion"],
+      "description": "Fuse de glow avanzado con control de color y falloff.",
+      "usage_notes": "Aparece en la biblioteca de herramientas de Fusion bajo Effects.",
+      "author": "ejemplo_autor3",
+      "author_url": "https://github.com/ejemplo_autor3",
+      "source_url": "https://github.com/ejemplo_autor3/glow-fuse",
+      "thumbnail": "",
+      "icon": "",
+      "images": [],
+      "youtube_id": "",
+      "resolve_min": "18.0",
+      "download_url": "https://github.com/ejemplo_autor3/glow-fuse/releases/download/v1.0/glow.fuse",
+      "compatibility": { "free": true, "studio": true },
+      "related": ["example-macro-titles"],
+      "upsell_plugin_id": "",
+      "changelog": [
+        { "version": "1.0.0", "date": "2025-04-14", "changes": ["Primera versión pública", "Control de color RGB independiente", "Falloff ajustable con curva bezier"] }
+      ]
+    },
+    {
+      "id": "example-script-exporter",
+      "name": "Smart Exporter",
+      "version": "1.3.0",
+      "priority": 2,
+      "category": "script",
+      "install_type": "script",
+      "added_date": "2025-03-15",
+      "tags": ["export", "automation"],
+      "description": "Script que automatiza la exportación con perfiles predefinidos.",
+      "usage_notes": "Aparece en Workspace → Scripts → Utility → Smart Exporter. Solo funciona con Studio.",
+      "author": "ejemplo_autor4",
+      "author_url": "https://github.com/ejemplo_autor4",
+      "source_url": "https://github.com/ejemplo_autor4/smart-exporter",
+      "thumbnail": "",
+      "icon": "",
+      "images": [],
+      "youtube_id": "",
+      "resolve_min": "18.5",
+      "download_url": "https://github.com/ejemplo_autor4/smart-exporter/releases/download/v1.3/exporter.py",
+      "compatibility": { "free": false, "studio": true },
+      "related": [],
+      "upsell_plugin_id": "example-fuse-glow",
+      "changelog": [
+        { "version": "1.3.0", "date": "2025-03-15", "changes": ["Nuevo perfil H.265 ProRes", "Fix crash con timeline vacía"] },
+        { "version": "1.0.0", "date": "2024-10-01", "changes": ["Versión inicial"] }
+      ]
+    },
+    {
+      "id": "example-resolve-companion",
+      "name": "Resolve Companion",
+      "version": "1.1.0",
+      "priority": 5,
+      "category": "software",
+      "install_type": "software",
+      "added_date": "2025-04-12",
+      "tags": ["utility", "companion", "tools"],
+      "description": "Herramienta externa que complementa DaVinci Resolve con atajos adicionales y monitoreo de rendimiento.",
+      "usage_notes": "Ejecuta Resolve Companion antes de abrir DaVinci Resolve. Aparece en la bandeja del sistema.",
+      "author": "maaruax",
+      "author_url": "https://github.com/MaaruAx",
+      "source_url": "https://github.com/MaaruAx/resolve-companion",
+      "thumbnail": "",
+      "icon": "",
+      "images": [],
+      "youtube_id": "",
+      "resolve_min": "18.0",
+      "download_url": "https://github.com/MaaruAx/resolve-companion/releases/download/v1.1/ResolveCompanion-Setup.exe",
+      "compatibility": { "free": true, "studio": true },
+      "related": ["example-script-exporter"],
+      "upsell_plugin_id": "",
+      "changelog": [
+        { "version": "1.1.0", "date": "2025-04-12", "changes": ["Panel de monitoreo de GPU en tiempo real", "Soporte para shortcuts personalizados"] },
+        { "version": "1.0.0", "date": "2025-03-01", "changes": ["Lanzamiento inicial"] }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "id": "preset-filmic-warm",
+      "name": "Filmic Warm",
+      "plugin_id": "example-lut-pack",
+      "plugin_name": "Cinematic LUT Pack",
+      "description": "Preset cálido cinematográfico optimizado para interiores",
+      "author": "usuario_ejemplo",
+      "thumbnail": "",
+      "download_url": ""
+    }
+  ],
+  "_schema": {
+    "repo_fields": ["name","author","description","url","website","new_days (int: días que un plugin aparece en sección Nuevos)"],
+    "plugin_fields": ["id","name","version","priority","category","install_type","added_date (YYYY-MM-DD)","tags[]","description","usage_notes","author","author_url","source_url","thumbnail (16:9 URL)","icon (1:1 URL)","images[] (carousel extra)","youtube_id","resolve_min","download_url","compatibility{free,studio}","related[] (IDs)","upsell_plugin_id (shown after install)","changelog[{version,date,changes[]}]"],
+    "langs_fields": ["code","name","url (JSON con clave strings:{})"],
+    "themes_fields": ["id","name","colors{--bg,--sf,--sf2,--sf3,--bd,--bd2,--tx,--tx2,--tx3,--ac,--hover,--active-hl,--tag-bd,--toggle-dot}"]
+  }
+}
